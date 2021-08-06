@@ -1,5 +1,6 @@
 package br.com.alura.spring.data.service;
 
+import java.util.List;
 import java.util.Scanner;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,47 +11,58 @@ import br.com.alura.spring.data.repository.CargoRepository;
 
 @Service
 public class CrudCargoService {
-	
+
 	@Autowired
 	private CargoRepository cargoRepository;
-	
+
 	private Boolean system = true;
-	
-	public void inicial(Scanner scanner){
-		
-		while(system) {
+
+	public void inicial(Scanner scanner) {
+
+		while (system) {
 			System.out.println("Qual ação de cargo deseja executar ?");
 			System.out.println("0 - Sair");
 			System.out.println("1 - Salvar");
 			System.out.println("2 - Alterar");
 			System.out.println("3 - Vizualizar");
 			System.out.println("4 - Deletar");
-			
+
 			int action = scanner.nextInt();
-			
+
 			switch (action) {
 			case 0:
-				system = false;	
+				system = false;
 				break;
 			case 1:
-				salvar(scanner);	
+				salvar(scanner);
 				break;
 			case 2:
 				alterar(scanner);
 				break;
 			case 3:
-				vizualizar();
+				System.out.println("1 - Vizualizar todos");
+				System.out.println("2 - Buscar por descrição");
+				int selection = scanner.nextInt();
+				scanner.nextLine();
+				if (selection == 1) {
+					vizualizar();
+				} else {
+					System.out.println("Digite a descrição");
+					String descricao = scanner.nextLine();
+					buscarPorDescricao(descricao);
+				}
 				break;
 			case 4:
 				deletar(scanner);
 				break;
 			default:
-				System.out.println("Opção inválida!");;	
+				System.out.println("Opção inválida!");
+				;
 				break;
 			}
 		}
 	}
-	
+
 	private void deletar(Scanner scanner) {
 		System.out.println("Digite o Id do cargo que deseja excluir");
 		int id = scanner.nextInt();
@@ -60,7 +72,7 @@ public class CrudCargoService {
 
 	private void vizualizar() {
 		Iterable<Cargo> cargos = cargoRepository.findAll();
-		cargos.forEach(cargo -> System.out.println(cargo));	
+		cargos.forEach(cargo -> System.out.println(cargo));
 	}
 
 	private void salvar(Scanner scanner) {
@@ -84,6 +96,11 @@ public class CrudCargoService {
 		cargo.setDescricao(descricao);
 		cargoRepository.save(cargo);
 		System.out.println("Alterado!");
+	}
+
+	private void buscarPorDescricao(String descricao) {
+		List<Cargo> cargos = cargoRepository.findByDescricao(descricao);
+		cargos.forEach(System.out::println);
 	}
 
 }
